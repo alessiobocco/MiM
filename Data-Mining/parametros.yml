@@ -1,0 +1,9 @@
+# ------------------------------------------------------------- #
+# Archivos necesarios 
+# ------------------------------------------------------------- #
+data:
+  compressed: "competition_data.zip"
+  training:
+    training_data: "training_data.fst"
+    target: "train_contacts.csv"
+# ------------------------------------------------------------- #

@@ -1,0 +1,5 @@
+"0","equatiomatic::extract_eq(modelo_regresion_condicion$`Condicion: 1`, intercept = ""beta"")"
+"1","$$
+\operatorname{itemsold} = \beta_{0} + \beta_{1}(\operatorname{desktop}) + \beta_{2}(\operatorname{post}) + \beta_{3}(\operatorname{desktop} \times \operatorname{post}) + \epsilon
+$$
+"

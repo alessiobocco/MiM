@@ -1,0 +1,10 @@
+"0","tipos_datos %>%"
+"2","Warning message:
+"
+"2","In eval(parse_only(paste(""alist("", quote_label(params), "")""))) :"
+"2","
+ "
+"2"," internal error -3 in R_decompress1
+"
+"0","  knitr::kable(., ""latex"", booktabs = T) %>%"
+"0","  kableExtra::kable_styling(latex_options = c(""striped"", ""scale_down""))"

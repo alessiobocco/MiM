@@ -1,0 +1,7 @@
+"0","prueba_media_tabla %>%"
+"0","  dplyr::select(`Media estimada` = estimate, Estadístico = statistic,"
+"0","                p.valor = p.value, método = method, `Hipótesis alternativa` = alternative) %>%"
+"0","  kableExtra::kable_styling(latex_options = c(""striped"", ""scale_down""))"
+"2","Error in if (!kable_format %in% c(""html"", ""latex"")) { : 
+  argument is of length zero
+"

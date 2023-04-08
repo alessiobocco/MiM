@@ -1,0 +1,3 @@
+"0","prueba_media_tabla %>%"
+"0","  dplyr::select(`Media estimada` = estimate, Estadístico = statistic,"
+"0","                p.valor = p.value, método = method, `Hipótesis alternativa` = alternative)"

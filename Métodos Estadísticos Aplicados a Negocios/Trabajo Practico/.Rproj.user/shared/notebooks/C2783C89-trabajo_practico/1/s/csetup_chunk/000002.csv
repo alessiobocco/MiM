@@ -1,0 +1,3 @@
+"0","library(kableExtra)"
+"0","library(magrittr)"
+"0","knitr::opts_chunk$set(echo = TRUE, tidy.opts=list(width.cutoff=40),tidy=TRUE)"
