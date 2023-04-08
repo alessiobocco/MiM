@@ -1,0 +1,4 @@
+"0","modelsummary::modelsummary(modelo_general, "
+"0","  fmt = 1,"
+"0","  estimate  = ""{estimate} [{conf.low}, {conf.high}]"","
+"0","  statistic = NULL, stars = TRUE) "

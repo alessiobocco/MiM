@@ -1,0 +1,14 @@
+"0","perfiles %>%"
+"0","  dplyr::rename_all(funs(stringr::str_to_title(.))) %>%"
+"0","  DT::datatable()"
+"2","Warning: `funs()` was deprecated in dplyr 0.8.0.
+Please use a list of either functions or lambdas: 
+
+  # Simple named list: 
+  list(mean = mean, median = median)
+
+  # Auto named with `tibble::lst()`: 
+  tibble::lst(mean, median)
+
+  # Using lambdas
+  list(~ mean(., trim = .2), ~ median(., na.rm = TRUE))"

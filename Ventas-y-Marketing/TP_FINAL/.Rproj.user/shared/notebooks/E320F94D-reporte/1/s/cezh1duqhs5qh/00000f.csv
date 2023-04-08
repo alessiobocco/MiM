@@ -1,0 +1,3 @@
+"0","cambios.utilidad.individual %>%"
+"0","  dplyr::rename_all(funs(stringr::str_to_title(.))) %>%"
+"0","  DT::datatable()"

@@ -1,0 +1,15 @@
+# ------------------------------------------------------------------------- #
+# Rutas 
+# ------------------------------------------------------------------------- #
+dir:
+  base: "/Users/alessiobocco/Documents/Maestria/Maestría Di Tella/Ventas y Marketing/TP_FINAL"
+  src: "/Users/alessiobocco/Documents/Maestria/Maestría Di Tella/Ventas y Marketing/TP_FINAL/src "
+  data: "/Users/alessiobocco/Documents/Maestria/Maestría Di Tella/Ventas y Marketing/TP_FINAL/data" 
+  output: "/Users/alessiobocco/Documents/Maestria/Maestría Di Tella/Ventas y Marketing/TP_FINAL/output"
+# -------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------- #
+# Cantidad de nucleos 
+# ------------------------------------------------------------------------- #
+wrokers: 6
+# -------------------------------------------------------------------------

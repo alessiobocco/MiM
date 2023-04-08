@@ -1,0 +1,298 @@
+---
+title: "Trabajo Final de Ventas y Merkating: Diseño de un producto"
+subtitle: "Master in Management + Analytics"
+author: "Alessio Bocco"
+date: '2022-11-25'
+output:
+  prettydoc::html_pretty:
+    theme: cayman
+    css: styles.css
+always_allow_html: true
+classoption: 12pt
+#bibliography: simulaciones.bib
+link-citations: true
+
+header-includes:
+    - \usepackage{setspace}
+    - \usepackage{lineno}
+    - \usepackage{float}
+    - \usepackage{caption}
+    - \usepackage{chngcntr}
+    - \floatstyle{ruled}
+    - \newfloat{codechunk}{htbp}{chk}
+    - \floatname{codechunk}{Source Code}
+    - \floatplacement{figure}{H} #make every figure with caption = h
+---
+
+<style>
+.html-widget {
+    margin: auto;
+}
+</style>
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo=FALSE}
+na.pad <- function(x,len){
+  x[1:len]
+}
+
+makePaddedDataFrame <- function(l,...){
+  maxlen <- max(sapply(l,length))
+  data.frame(lapply(l,na.pad,len=maxlen),...)
+}
+```
+
+# Diseño de un producto
+
+En el presente se describe le proceso desarrollado para el diseño de un nuevo producto alimenticio. Se aplicó un análisis conjunto sobre el producto de interés para conocer cuáles son las preferencias de los usuarios y qué importancia le asignan a los distintos atributos del producto. El objetivo de la investigación es obtener información estadísticamente significativa que actúe de soporte para tomar la decisión de introducir el producto al mercado. 
+
+El primer paso de la investigación fue definir el producto en cuestión y los atributos más importantes que lo caracterizan y que tienen _a priori_ el mayor peso a la hora de su elección. El producto elegido pertenece a la industria láctea y, específicamente, se trata de quesos artesanales. Los atributos para caracterizar al producto son loa siguientes:
+
+```{r echo=FALSE, results='asis'}
+```
+
+
+```{r echo=FALSE, results='asis'}
+# No mostrar valores NA
+options(knitr.kable.NA = '')
+
+# Mostrar atributos elegidos
+makePaddedDataFrame(list(Leche = config$params$atributos$leche,
+                         Tratamiento = config$params$atributos$tratamiento,
+                         Textura = config$params$atributos$textura,
+                         Sabor = config$params$atributos$sabor,
+                         Packaging = config$params$atributos$packaging,
+                         Tamaño = config$params$atributos$tamaño,
+                         Precio = config$params$atributos$precio)) %>%
+      kableExtra::kable()
+```
+
+Luego de definir los atributos relevantes se generó un diseño factorial para combinarlos y obtener así perfiles relevantes que combinasen eficientemente los distintos atributos. 
+
+```{r, echo = FALSE}
+perfiles %>%
+  dplyr::rename_all(funs(stringr::str_to_title(.))) %>%
+  DT::datatable()
+```
+
+Una vez obtenidos los perfiles se elaboró una encuesta en Google Forms para que los consumidores pudiesen valorar en una escala ordinal de 1-9 a cada perfil de producto presentado. La valoración debe ser entendida como un proxy de la probabilidad de compra de un perfil determinado frente a un conjunto de posibilidades. El link el formulario es el siguiente: [hacer click aquí. ](https://docs.google.com/forms/d/e/1FAIpQLSd9BqTTF6YEpsqj1gs6ejHRIDzc4qZxSn3VeCJuwxBrMCI5tQ/viewform?usp=share_link)
+
+Adjunto al presente reporte autocontenido se incluye la versión en .pdf del cuestionario y las respuestas de los consumidores.
+
+# Análisis de datos
+
+## Regresión parcial por individuo encuestado
+
+Para cada uno de los encuestados se ajustó un modelo lineal por mínimos cuadrados ordinarios. El modelo general es el siguiente:
+
+```{r model_linear, echo=FALSE,results = "asis", echo = FALSE}
+equatiomatic::extract_eq(modelo_general, intercept = "beta", wrap = T)
+```
+
+Cada uno de los atributos del producto son transformados en variables dummy. Es decir, variables binarias dónde 1 significa que el producto posee determinado atributo y 0 que no lo posee. 
+
+Los niveles base de las variables dummy son las siguientes:
+
+```{r, echo = FALSE}
+utilidad.encuestado %>%
+  dplyr::filter(estimate == 0) %>%
+  dplyr::select(variable, nivel) %>%
+  dplyr::distinct() %>%
+  dplyr::rename_all(funs(stringr::str_to_title(.))) %>%
+  dplyr::mutate(Variable = stringr::str_to_title(Variable)) %>%
+  kableExtra::kable()
+```
+
+El modelo ajustado para el primer encuestado se muestra en la siguiente ecuación.
+
+```{r, echo=FALSE}
+equatiomatic::extract_eq(modelo_general, wrap = TRUE, 
+                         use_coefs = TRUE, coef_digits = 3)
+```
+
+Los resultados del ajuste del modelo lineal son los siguientes:
+
+```{r , echo = FALSE}
+modelsummary::modelsummary(modelo_general, 
+  fmt = 1,
+  estimate  = "{estimate} [{conf.low}, {conf.high}]",
+  statistic = NULL) 
+```
+
+Como se observa en la regresión del encuestado 1, el modelo es significativo (p-valor del intercepto es menor a 0.05). El R cuadrado ajustado es muy alto por el uso de variables dummy por lo que no es interpretable. Varias variables del modelo son significativas estadísticamente lo que indica que dichos atributos tienen una influencia importante en la decisión de compra del producto por parte del encuestado. La variable precio ha sido significativa en todas sus variantes, lo que es lógico. El intercepto es de 3.2175  utiles, que caería en -1.3 utiles si se trata de leche pasteruizada o en -2.136 cuando el tamaño del queso es de 1000 gramos. Tanto el tamaño como el precio son dos de los atributos más relevantes para este usuario. Al evaluar el precio, los utiles caen a medida que el precio por kilo del producto aumenta y siendo los coeficientes más altos, se trata de los atributos más importantes para este usuario en particular. 
+
+Si bien solo se detallan los resultados de la primera regresión, la interpretación de las demás es análoga. En la siguiente tabla se muestran las 19 regresiones, una para cada una de los individuos encuestados.
+
+```{r, echo = FALSE}
+regresiones.individuales %>%
+  dplyr::rename_all(funs(stringr::str_to_title(.))) %>%
+  dplyr::mutate(across(where(is.numeric), round, 3)) %>%
+  DT::datatable() 
+```
+
+
+A modo de conclusión se muestra el siguiente boxplot donde se observa la variabilidad de los valores de los coeficientes de las regresiones. 
+
+```{r, echo = FALSE, fig.align='center'}
+boxplot.coeficientes
+```
+Es de destacar como el precio es sistemáticamente negativo y es la única variable con este comportamiento. Al evaluar la significancia de los coeficiente, la siguiente figura muestra la densidad empírica de los p-valores de los coeficientes de la regresión. La línea punteada corresponde al umbral de 0.05.
+
+```{r, echo=F, fig.align='center', fig.height=10, fig.width=10}
+significancia.coeficientes
+```
+
+En términos generales, el intercepto de los modelos es significativo en muchos casos seguido por el precio, leche de vaca y el tamaño del producto. No obstante hay una importante variabilidad los resultados. 
+
+## Importancia relativa de los atributos
+
+El análisis conjunto se sustenta en que los usuarios tienen distintas valoraciones y percepciones ante un mismo producto. Por lo tanto, es posible identificar que tan importante son los distintos atributos para un potencial usuario. Al analizar los ajustes de las regresiones se puede identificar cual atributo es relativamente más importante. Cuando se conocen las preferencias del mercado es posible diseñar el producto haciendo hincapié en estos atributos. En la siguiente Figura se muestra la importancia relativa de cada uno de ellos según la encuesta. 
+
+```{r, echo = FALSE, fig.align='center', fig.height= 15, fig.width=12}
+figura.importancia.individual.atributos
+```
+
+Como se observam las valoraciones percibidas son muy dispares entre los individuos. Existe una importante influencia de los gustos persones y las preferencias. No se visualiza un patrón claro a simple vista. Sin embargo es posible identificar al precio y al tipo de leche como las variables más preponderantes. En un segundo plano se encuentra el packaging, tamaño y textura y por último el sabor y el tratamiento. Si bien se trata de un producto con cierta diferenciación, sobretodo los quesos de otras leches, los usuarios siguen priorizando el aspecto económico y tienden a ser más conservadores eligiendo los productos lácteos bovinos de consumo más masivo. El espacio para productos muy diferenciados podría ser muy reducido. 
+Estas conclusiones son muy aventuradas dada el tamaño de la muestra pero pordía considerarse como una primera aproximación. 
+
+La siguiente tabla muestra la importancia de los atributos para cada uno de los encuestados. 
+
+```{r, echo = FALSE}
+importancia.individual.atributos.global %>%
+  dplyr::rename_all(funs(stringr::str_to_title(.))) %>%
+  DT::datatable()
+```
+
+
+Otra forma de visualizar los resultados consiste en un mapa de calor donde se muestra la importancia relativa de cada variable para cada uno de los usuarios. 
+
+```{r, echo = FALSE, fig.align='center', fig.height=7, fig.width=10}
+figura.heatmap.importancia
+```
+
+En esta Figura se vuelve a confirmar la gran variabilidad que tienen los datos en cuánto a la preferencia de los usuarios. Esta falta de homogeneidad bien puede tratarse por el pequeño tamaño de la muestra 
+
+A modo de resumen se muestra la prioridad que le asignaron los usuarios a cada uno de los atributos. Las variables se ordenaron de mayor (1) a menor (7) prioridad y muestra la frecuencia de cada una de estas clases en cuanto al número de encuestados. Por ejemplo, para el atributo tipo de leche, el 30% de los encuestados lo califico como la variable más importante y en el otro extremo, la mitad de los encuestados definió al sabor como la variable más importante. 
+
+```{r, echo = FALSE, fig.align='center'}
+figura.importancia.individual.atributos.media
+```
+
+## Valores parciales asociados al precio
+
+Dado que el precio es un atributo muy importante y que sistemáticamente su aumento disminuye la utilidad es necesario evaluar su dinámica. Al tratarse de un alimento y por el contexto actual se podría esperar que las preferencias de las personas se centren en productos más económicos pero tratando de resignar la menor cantidad de atributos atractivos posibles. La siguiente Figura muestra la funciones de utilidad para el precio para cada uno de los encuestados. Por ejemplo, para el individuo 1 un aumento del precio de 2000 ARS disminuye la utilidad en 3 utiles pero cambios posteriores en el precio parecieran tener un efecto marginal mucho menor. Sin embargo, para algunos usuarios aumento de precio del valor medio al alto producen un aumento de la utilidad lo que indica que para algunos el precio está asociado a una mayor calidad del producto. En algunos pocos casos el aumento de precio bajo a medio produce un aumento de utilidad. Este comportamiento puede estar relacionado con la calidad ya que algunos consumidores podrían considerar al producto más barato como una segunda marca y prefieren la de primera línea. 
+
+```{r, echo = FALSE, fig.align='center', fig.height= 15, fig.width=10}
+figura.variacion.precio.individua
+```
+
+
+Cómo conclusión se observa que las funciones de utilidad no son planas lo que indica que el usuario es muy sensible al precio. En casi todos los casos las pendientes de las curvas son negativas y bastante pronunciadas. Solo algunas excepciones son, relativamente inelásticas en el rango de precios bajos a medios pero la gran mayoría pierden mucha utilidad al saltar al escalón más alto de la categoría. Dada la sensibilidad al precio sería muy importante resaltar aspectos cualitativos que destaquen al producto para convalidar mayores precios. 
+
+## Disposición a pagar ante variaciones del atributo principal
+
+Sin duda que el atributo principal será el que definirá un compra. Para conocer su efecto sobre la probabilidad de compra es necesario aislar el efecto marginal del mismo con respecto al precio. Para analizar la disposición a pagar ante cambios del atributo principal se calculó el rango de precio del producto como la diferencia entre el valor máximo y mínimo (6000 - 2000 ARS). Además se debe considerar la magnitud de la diferencia de los coeficientes relativos al precio. 
+Luego se identifica el atributo más importante para cada encuestado y se calcula la utilidad relativa ante su cambio. Al hacerlo se evalúa cuanto cambia la utilidad de los individuos al cambiar desde el nivel base del atributo hacia otro superior. Con estos datos ya se puede evaluar la disposición a pagar de cada persona. Por ejemplo, para el individuo 1 el atributo más importante fue la textura luego del precio. Al cambiar la pasta blanda por dura tiene un cambio en sus utiles de 0.91 y una disposición a pagar de 1014 ARS. La misma interpretación se realiza con las demás variables e individuos. Un caso interesante es el del individuo 5 que tiene na rechazo muy marcado por la leche de cabra por lo que quesos de otras leches le generan una utilidad muy elevada. 
+
+La siguiente tabla muestra los cambios en la disposición a pagar por cada individuo.
+
+```{r, echo = FALSE}
+cambios.utilidad.individual %>%
+  dplyr::rename_all(funs(stringr::str_to_title(.))) %>%
+  dplyr::mutate(across(where(is.numeric), round, 3)) %>%
+  DT::datatable()
+```
+
+
+## Segmentación de los encuestados
+
+Para la segmentación se aplicó el método de K-means, una metodología de análisis no supervisado para identificar grupos con características similares que no han sido etiquetados. El agrupamiento se realiza minimizando la suma de distancias entre cada objeto y el centroide de su grupo. Es decir, trata de minimizar la variabilidad intragrupo y maximizar la intergrupo. 
+
+Un paso importante para la aplicación de esta metodología es la definición de la cantidad de grupos. Existen distintas metodologías para identificar el número óptimo de clusters, cómo el método del codo o indices como el _silhoutte_. Sin embargo, dado que la muestra es tan pequeña se debe tener en cuenta un sentido pero encima de lo que podrían indicar estas pruebas La siguiente Figura muestra la suma de cuadrados dentro de cada grupo. Ésta es una variable muy interesante para utilizar el método del codo. 
+
+```{r, echo = FALSE, fig.align='center'}
+figura.metodo.codo
+```
+
+Si bien parecieran ser cinco grupos los óptimos se prefirió trabajar con tres para no reducir tanto la muestra. Al utilizar distintos índices de agrupamiento, el resultado es similar y la gran mayoría arroja 5 como el número óptimo de clusters, como muestra la siguiente Figura. Al calcular varios indices de agrupamiento se contaron la cantidad de grupos que arrojaron las distintas pruebas.
+
+```{r, echo = FALSE, fig.align='center'}
+figura.indices.clustering
+```
+
+Sin embargo, como se mencionó, 5 grupos era demasiado para una muestra tan pequeño y se forzó al algoritmo a separar solo tres grupos. Los valores promedios de los coeficientes para cada uno de los grupos se muestra en la siguiente Figura. 
+
+```{r, echo = FALSE, fig.align='center', fig.height=8}
+figura.valores.cluster
+```
+
+Los grupos son bien divergentes entres sí. El grupo 1 contiene 9 encuestados, el 2 tiene 6 y el 3 sólo 4. Los clusters 1 y 3 tienen un valor de intercepto medio de 3 utiles, los más bajos de la muestra, lo que indicaría la mayor preferencia de los tres a los niveles base de los atributos, es decir, quesos de cabra cruda, envasada al vacío en un tamaño pequeño, con un precio de 2000 ARS, de sabor intenso y de textura blanda. Sin embargo, el cluster 1 es el menos sensible al precio. Si bien todos los grupos tienen coeficientes negativos, el del grupo 1 es el menor con un valor de -0.644 y	-0.957 para el precio medio y alto, respectivamente. Esto quiere decir que _ceteris paribus_, un aumento en el precio de 2000 ARS a 6000 ARS haría caer la utilidad para los encuestados del grupo 1 en casi un 1 util, de 3 (nivel base) a 2 utiles. Además del precio, el cluster 1 se destaca por su preferencia por las texturas duras de quesos (+0.817) y los tamaños grandes de 1000 gramos (+1.628). Para este grupo el producto ideal sería el queso con los siguientes atributos: 
+
+* Leche: Cabra
+* Packaging: Cuña envuelta en film
+* Precio: 2000 ARS
+* Sabor: Intenso
+* Tamaño: Grande
+* Textura: Dura
+* Tratamiento: Pasteurizada
+
+Se trata de un producto bastante particular y podría ser una muy buena oportunidad para un producto diferenciado como es el queso de cabra. 
+
+El grupo 2, en cambio, tiene el mayor valor para el intercepto (~ +6), aunque se destaca por una gran preferencia por quesos hechos con leche pasteurizada y de textura blanda. Además, es el único grupo que no prefiere la leche de vaca. Con respecto al packaging prefiere a la cuña envuelta en film. Se trata de personas con una sensibilidad al precio media. No obstante, lo que más destaca a este grupo es su preferencia por la leche pasteurizada (+1). Para este grupo, el producto ideal sería el siguiente: 
+
+* Leche: Cabra
+* Packaging: Cuña envuelta en film
+* Precio: 2000 ARS
+* Sabor: Intenso
+* Tamaño: Pequeño
+* Textura: Blanda
+* Tratamiento: Pasteurizada
+
+Por último, el tercer grupo se destaca por una muy marcada preferencia por los quesos de leche de vaca (~+3). A su vez es el más sensible al precio con una disminución de la utilidad de -1.68 y -2.451 ante el aumento del precio de 4000 y 6000 ARS, respectivamente.  Con respecto al tamaño es el que más marcada preferencia tiene por los tamaños pequeños. Otra característica notable es su elección de quesos de textura semi-blanda (+1.06), siendo la utilidad más alta de los tres grupos. Para este segmento de clientes el producto ideal seria:
+
+* Leche: Vaca
+* Packaging: Cuña envuelta en film u Horma encerada
+* Precio: 2000 ARS
+* Sabor: Suave
+* Tamaño: Pequeño
+* Textura: Semi-blanda
+* Tratamiento: Pasteurizada
+
+Identificar visualmente las variables que más discriminan es un desafío. Por lo tanto se aplican técnicas de reducción de dimensión como el análisis de componentes principales para obtener nuevas variables no correlacionadas entre sí. Se seleccionan dos variables que explican un porcentaje importante de la variabilidad total de la muestra y se grafican los consumidores para evaluar su distribución en este nuevo espacio. La Figura siguiente muestra el resultado de aplicar la mencionada técnica. 
+
+```{r, echo = FALSE, fig.align='center'}
+figura.clusters
+```
+
+Las primeras dos componentes principales explican sólo el 47% de la variabilidad total. Esto podría deberse al pequeño tamaño de la muestra. Sin embargo, se puede observar como los tres grupos se separan y tienden a concentrarse en extremos del espacio. 
+
+Los valores medios de los coeficientes para cada uno de ellos se muestran en la siguiente tabla. 
+
+```{r, echo = FALSE}
+datos.clustering.medios %>%
+  dplyr::select(coeficiente, valor, cluster) %>%
+  tidyr::spread(coeficiente, valor) %>%
+  dplyr::rename_all(funs(stringr::str_to_title(.))) %>%
+  dplyr::mutate(across(where(is.numeric), round, 3)) %>%
+  DT::datatable(width = '100%', options = list(scrollX = TRUE))
+```
+
+
+## Participación de mercado
+
+El análisis culmina con la evaluación de dos configuraciones nuevas de productos que no participaron de las encuestas para estimar su valoración. El objetivo es predecir el market-share de estos nuevos productos. Cabe destacar que actualmente son los productos ofrecidos por la competencia, por lo que es primordial conocer estos números. Los atributos de los productos evaluados fueron:
+
+* Producto A: Vaca; Pasteurizada; Dura; Intenso; Horma encerada; 500; 2000
+* Producto B: Oveja; Pasteruizada; DUra; Intenso; Horma encerada; 1000; 2000
+
+Se utilizó el modelo lineal ajustado para predecir los utiles de cada uno de los individuos encuestados. Las preferencias de los consumidores por los dos productos se muestra en la siguiente Figura.
+
+```{r, echo = FALSE, fig.align='center'}
+figura.eleccion.competencia
+```
+
+Se observa como la mayoría de los encuestados prefinió el producto A con más del 80% de los encuestados. Este producto sería potencialmente el principal competidor del producto que se encuentra en desarrollo. 

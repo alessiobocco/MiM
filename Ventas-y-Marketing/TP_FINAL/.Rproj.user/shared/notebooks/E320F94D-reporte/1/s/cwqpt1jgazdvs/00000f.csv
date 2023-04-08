@@ -1,0 +1,6 @@
+"0","utilidad.encuestado %>%"
+"0","  dplyr::filter(estimate == 0) %>%"
+"0","  dplyr::select(variable, nivel) %>%"
+"0","  dplyr::distinct() %>%"
+"0","  dplyr::rename_all(funs(stringr::str_to_title(.))) %>%"
+"0","  kableExtra::kable()"

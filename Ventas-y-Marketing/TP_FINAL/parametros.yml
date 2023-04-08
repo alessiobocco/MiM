@@ -1,0 +1,43 @@
+# ------------------------------------------------------------------------- #
+# Archivos necesarios 
+# ------------------------------------------------------------------------- #
+data:
+  cuestionario: "prefiles_marketing.csv"
+  respuestas: "respuestas_cuestionario.xlsx"
+# ------------------------------------------------------------------------- #
+
+# ------------------------------------------------------------------------- #
+# Atributos del productos
+atributos:
+  leche: ["Vaca", "Oveja", "Cabra"]
+  tratamiento: ["Cruda", "Pasteurizada"]
+  textura: ["Dura", "Semi-dura", "Semi-blanda","Blanda"]
+  sabor: ["Intenso", "Suave"] 
+  packaging: ["Horma encerada", "Cuña envuelta en film", "Cuña al vacío"]
+  tamaño: ["200", "500", "1000"]
+  precio: ["2000", "4000","6000"]
+  
+# ------------------------------------------------------------------------- #
+
+# ------------------------------------------------------------------------- #
+# Atributos de la competencia
+producto.competencia:
+  producto.a: 
+    leche: ["Vaca"]
+    tratamiento: ["Pasteurizada"]
+    textura: ["Dura"]
+    sabor: ["Intenso"]
+    packaging: ["Horma encerada"]
+    tamaño: ["500"]
+    precio: ["2000"]
+  producto.b:
+    leche: ["Oveja"]
+    tratamiento: ["Pasteurizada"]
+    textura: ["Dura"]
+    sabor: ["Intenso"] 
+    packaging: ["Horma encerada"]
+    tamaño: [ "1000"]
+    precio: ["2000"]
+
+
+# ------------------------------------------------------------------------- #
