@@ -1,0 +1,94 @@
+# -----------------------------------------------------------------------------------
+# Parametros relacionados con directorios de trabajo
+# -----------------------------------------------------------------------------------
+dir:  
+  base: "/Users/alessiobocco/Programacion/R/CREA/ensayos/chicharrita"
+  lib: "/Users/alessiobocco/Programacion/R/CREA/ensayos/chicharrita/lib"
+  work: "/Users/alessiobocco/Programacion/R/CREA/ensayos/chicharrita/work"
+  run: "/Users/alessiobocco/Programacion/R/CREA/ensayos/chicharrita/run"
+# -----------------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------------
+# Datos de acceso a base de datos
+# -----------------------------------------------------------------------------------
+db:
+  name: spiroplasma
+  host: localhost
+  port: 5432
+  user: alessiobocco
+  password: ${db.password}
+# -----------------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------------
+# Especificaciones del producto a descargar
+# -----------------------------------------------------------------------------------
+producto:
+  url: 'https://cmr.earthdata.nasa.gov/stac/LPCLOUD/search'
+  plataforma: ["HLSS30.v2.0", "HLSL30.v2.0"]
+  nivel.aceptacion: L2A
+# -----------------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------------
+# Maximo porcentaje de nubes sobre el area
+# -----------------------------------------------------------------------------------
+maximo.porcentaje.nubes: 
+  mosaico: 90
+  campo: 50
+# -----------------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------------
+# Maximo porcentaje de faltantes
+# -----------------------------------------------------------------------------------
+maximo.porcentaje.faltantes:
+  campo: 50
+# -----------------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------------
+# Mascara para filtrar pixels:
+#
+# - "nomask": do not mask any pixel;
+# - "nodata": mask pixels checked as "No data" or "Saturated or defective" in the SCL product (all pixels with values are maintained);
+# - "cloud_high_proba": mask pixels checked as "No data", "Saturated or defective" or "Cloud (high probability)" in the SCL product;
+# - "cloud_medium_proba": mask pixels checked as "No data", "Saturated or defective" or "Cloud (high or medium probability)" in the SCL product;
+# - "cloud_and_shadow": mask pixels checked as "No data", "Saturated or defective", "Cloud (high or medium probability)" or "Cloud shadow" in the  #   SCL product;
+# - "clear_sky": mask pixels checked as "No data", "Saturated or defective", "Cloud (high or medium probability)", "Cloud shadow", "Unclassified"  #   or "Thin cirrus" in the SCL product (only pixels classified as clear-sky surface - so "Dark area", "Vegetation", "Bare soil", "Water" or       #   "Snow" - are maintained);
+# - "land": mask pixels checked as "No data", "Saturated or defective", "Cloud (high or medium probability)", "Cloud shadow", "Dark area",         #   "Unclassified", "Thin cirrus", "Water" or "Snow" in the SCL product (only pixels classified as land surface - so "Vegetation" or "Bare soil" - #   are maintained);
+# -----------------------------------------------------------------------------------
+mascara: clear_sky
+# -----------------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------------
+# Especificaciones de la descarga
+# -----------------------------------------------------------------------------------
+descarga:
+  fecha.minima.dias: 30 # Dias anteriores a la fecha hasta
+  maxima.cantidad.dias: 150
+  fechas:
+    incremental: 
+    fijo: ["2017-01-01", "2024-04-30"]
+# -----------------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------------
+# Productos a descargar
+# -----------------------------------------------------------------------------------
+producto_descarga: ['ndvi']
+#[ "ndvi", 'ndre', 'gndvi', 'ci-green', 'mcari', 'ndwi', 'ndmi', 'msi', 'sipi', 'rgb' ]
+# -----------------------------------------------------------------------------------
+
+
+# -----------------------------------------------------------------------------------
+# Campos ignorados
+# -----------------------------------------------------------------------------------
+campos.ignorados: [ 3, 4, 7, 8, 9 ]
+# -----------------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------------
+# Sistemas de coordenadas a utilizar
+# -----------------------------------------------------------------------------------
+proj4string:
+  latlon: '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs'
+  utm: '+proj=utm +zone=20 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs'
+  grilla_srid: 32720
+# -----------------------------------------------------------------------------------
